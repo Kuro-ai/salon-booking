@@ -17,6 +17,11 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin/orders', \App\Livewire\Admin\Orders::class)->name('admin.orders');
     Route::get('/admin/users', \App\Livewire\Admin\Users::class)->name('admin.users');
     Route::get('/admin/dashboard', \App\Livewire\Admin\Dashboard::class)->name('admin.dashboard');
+    Route::get('/admin/coupons', \App\Livewire\Admin\Coupons::class)->name('admin.coupons');
+    Route::get('/admin/advertisements', \App\Livewire\Admin\Advertisements::class)->name('admin.advertisements');
+    Route::get('/admin/services', \App\Livewire\Admin\ManageServices::class)->name('admin.services');
+    Route::get('/admin/staff', \App\Livewire\Admin\ManageStaff::class)->name('admin.staff');
+    Route::get('/admin/staff-schedules', \App\Livewire\Admin\ManageStaffSchedules::class)->name('admin.staff-schedules');
 });
 
 Route::middleware(['auth', 'customer'])->group(function () {
@@ -30,6 +35,10 @@ Route::middleware(['auth', 'customer'])->group(function () {
     Route::get('/order-success/{orderId}', \App\Livewire\Customer\OrderSuccess::class)->name('order.success');
     Route::get('/order-tracking', \App\Livewire\Customer\OrderTracking::class)->name('order.tracking');
     Route::get('/order-history', \App\Livewire\Customer\OrderHistory::class)->name('order.history');
+    Route::get('/wishlist', \App\Livewire\Customer\WishlistPage::class)->name('wishlist');
+    Route::get('/services', \App\Livewire\Customer\ServicesList::class)->name('service.list');
+    Route::get('/service/{serviceId}/book', \App\Livewire\Customer\StaffSchedules::class)
+    ->name('service.book');
 });
 
 Route::middleware([

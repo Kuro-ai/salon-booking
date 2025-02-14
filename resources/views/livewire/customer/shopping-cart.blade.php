@@ -1,6 +1,14 @@
 <div class="container mx-auto p-6">
     <h2 class="text-2xl font-bold mb-4">Shopping Cart</h2>
 
+    @if(session()->has('message'))
+        <p class="text-green-600">{{ session('message') }}</p>
+    @endif
+
+    @if(session()->has('error'))
+        <p class="text-red-600">{{ session('error') }}</p>
+    @endif
+
     @if(empty($cart))
         <p class="text-gray-600">Your cart is empty.</p>
     @else
@@ -38,8 +46,29 @@
             </tbody>
         </table>
 
+        <!-- Coupon Section -->
+        <div class="mt-4 flex">
+            <input type="text" wire:model="couponCode" class="border p-2 w-1/4" placeholder="Enter Coupon Code">
+            <button wire:click="applyCoupon" class="bg-blue-500 text-white px-4 py-2 ml-2">Apply</button>
+            @if ($appliedCoupon)
+                <button wire:click="removeCoupon" class="bg-red-500 text-white px-4 py-2 ml-2">Remove Coupon</button>
+            @endif
+        </div>
+
+        <!-- Discount Details -->
+        @if ($appliedCoupon)
+            <div class="mt-2 text-green-600">
+                Coupon Applied: <strong>{{ $appliedCoupon->code }}</strong> 
+                ({{ $appliedCoupon->discount_type === 'percentage' ? $appliedCoupon->discount_value . '%' : '$' . $appliedCoupon->discount_value }})
+            </div>
+        @endif
+
+        <!-- Final Price -->
         <div class="mt-4 text-right">
             <p class="text-xl font-bold">Total: ${{ number_format($this->getTotalPrice(), 2) }}</p>
+            @if ($appliedCoupon)
+                <p class="text-xl text-green-600">Discounted Total: ${{ number_format($this->getFinalTotal(), 2) }}</p>
+            @endif
             <button wire:click="clearCart" class="bg-gray-500 text-white px-4 py-2 mt-2">Clear Cart</button>
             <a href="{{ route('checkout') }}" class="bg-green-500 text-white px-4 py-2 mt-2">Proceed to Checkout</a>
         </div>

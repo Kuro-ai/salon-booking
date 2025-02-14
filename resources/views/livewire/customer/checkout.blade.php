@@ -24,7 +24,13 @@
             </tbody>
         </table>
 
-        <p class="text-xl font-bold mt-4">Total: ${{ number_format($totalAmount, 2) }}</p>
+        <p class="text-lg mt-4">Subtotal: ${{ number_format($totalAmount, 2) }}</p>
+
+        @if($discount > 0)
+            <p class="text-lg text-red-500">Discount: -${{ number_format($discount, 2) }}</p>
+        @endif
+
+        <p class="text-xl font-bold mt-2">Final Total: ${{ number_format($finalTotal, 2) }}</p>
     </div>
 
     <h3 class="text-xl font-bold">Shipping & Payment</h3>

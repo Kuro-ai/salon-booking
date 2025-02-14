@@ -9,31 +9,69 @@ use Illuminate\Support\Facades\Auth;
 class ProductReviews extends Component
 {
     public $product;
-    public $rating;
-    public $comment;
+    public $reviews;
+    public $editingReviewId = null;
+    public $editRating = [];
+    public $editComment = [];
 
-    public function submitReview()
+    public function mount()
+    {
+        $this->reviews = $this->product->reviews()->latest()->get();
+    }
+
+    public function editReview($reviewId)
+    {
+        $review = $this->reviews->where('id', $reviewId)->first();
+        if ($review && $review->user_id === Auth::id()) {
+            $this->editingReviewId = $reviewId;
+            $this->editRating[$reviewId] = $review->rating;
+            $this->editComment[$reviewId] = $review->comment;
+        }
+    }
+
+    public function updateReview($reviewId)
     {
         $this->validate([
-            'rating' => 'required|integer|min:1|max:5',
-            'comment' => 'nullable|string|max:500',
+            "editRating.$reviewId" => 'required|integer|min:1|max:5',
+            "editComment.$reviewId" => 'nullable|string|max:500',
         ]);
 
-        Review::create([
-            'user_id' => Auth::id(),
-            'product_id' => $this->product->id,
-            'rating' => $this->rating,
-            'comment' => $this->comment,
-        ]);
+        $review = Review::where('id', $reviewId)
+                        ->where('user_id', Auth::id())
+                        ->first();
 
-        $this->reset(['rating', 'comment']);
-        session()->flash('message', 'Review submitted successfully!');
+        if ($review) {
+            $review->update([
+                'rating' => $this->editRating[$reviewId],
+                'comment' => $this->editComment[$reviewId],
+            ]);
+
+            $this->editingReviewId = null;
+            session()->flash('message', 'Review updated successfully!');
+            $this->reviews = $this->product->reviews()->latest()->get(); // Refresh reviews
+        }
+    }
+
+    public function cancelEdit()
+    {
+        $this->editingReviewId = null;
+    }
+
+    public function deleteReview($reviewId)
+    {
+        $review = Review::where('id', $reviewId)
+                        ->where('user_id', Auth::id())
+                        ->first();
+
+        if ($review) {
+            $review->delete();
+            session()->flash('message', 'Review deleted successfully!');
+            $this->reviews = $this->product->reviews()->latest()->get(); // Refresh reviews
+        }
     }
 
     public function render()
     {
-        return view('livewire.customer.product-reviews', [
-            'reviews' => $this->product->reviews()->latest()->get(),
-        ]);
+        return view('livewire.customer.product-reviews');
     }
 }

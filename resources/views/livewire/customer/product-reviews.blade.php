@@ -26,10 +26,34 @@
     <div class="mt-6">
         @foreach($reviews as $review)
             <div class="border-b pb-4 mb-4">
-                <p class="font-bold">{{ $review->user->name }} <span class="text-yellow-500">{{ str_repeat('⭐', $review->rating) }}</span></p>
-                <p class="text-gray-600">{{ $review->comment }}</p>
-                <p class="text-sm text-gray-400">{{ $review->created_at->diffForHumans() }}</p>
+                <p class="font-bold">{{ $review->user->name }}</p>
+
+                @if($editingReviewId === $review->id)
+                    <!-- Inline Edit Mode -->
+                    <select wire:model="editRating.{{ $review->id }}" class="border p-1">
+                        <option value="1">⭐</option>
+                        <option value="2">⭐⭐</option>
+                        <option value="3">⭐⭐⭐</option>
+                        <option value="4">⭐⭐⭐⭐</option>
+                        <option value="5">⭐⭐⭐⭐⭐</option>
+                    </select>
+                    <textarea wire:model="editComment.{{ $review->id }}" class="border p-2 w-full mt-2"></textarea>
+                    <button wire:click="updateReview({{ $review->id }})" class="bg-green-500 text-white px-4 py-1 mt-2">Save</button>
+                    <button wire:click="cancelEdit" class="bg-gray-500 text-white px-4 py-1 mt-2">Cancel</button>
+                @else
+                    <!-- Display Mode -->
+                    <p class="text-yellow-500">{{ str_repeat('⭐', $review->rating) }}</p>
+                    <p class="text-gray-600">{{ $review->comment }}</p>
+                    <p class="text-sm text-gray-400">{{ $review->created_at->diffForHumans() }}</p>
+
+                    @if(Auth::id() === $review->user_id)
+                        <div class="mt-2 flex gap-2">
+                            <button wire:click="editReview({{ $review->id }})" class="text-blue-500">Edit</button>
+                            <button wire:click="deleteReview({{ $review->id }})" class="text-red-500">Delete</button>
+                        </div>
+                    @endif
+                @endif
             </div>
         @endforeach
-    </div>    
+    </div>
 </div>
