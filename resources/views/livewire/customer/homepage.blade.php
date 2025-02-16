@@ -80,6 +80,11 @@
             });
         </script>
     </div>
+    @if (session()->has('success'))
+        <div class="bg-green-200 text-green-700 p-3 mt-3">
+            {{ session('success') }}
+        </div>
+    @endif
     
     <h2 class="text-2xl font-bold mb-4">Shop Products</h2>
 

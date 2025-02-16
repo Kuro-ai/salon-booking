@@ -21,7 +21,6 @@ class StaffSchedules extends Component
 
     public function updatedSelectedStaff()
     {
-
         if ($this->selectedStaff) {
             $this->schedules = StaffSchedule::where('staff_id', $this->selectedStaff)
                 ->where('is_booked', false)
@@ -34,15 +33,8 @@ class StaffSchedules extends Component
 
     public function bookService($scheduleId)
     {
-        $schedule = StaffSchedule::find($scheduleId);
-        
-        if (!$schedule || $schedule->is_booked) {
-            session()->flash('error', 'Schedule not available.');
-            return;
-        }
-
-        // Emit event for confirmation
-        $this->dispatch('confirmBooking', $scheduleId);
+        // Dispatch a Livewire event to the frontend
+        $this->dispatch('confirm-booking', scheduleId: $scheduleId);
     }
 
     public function confirmBooking($scheduleId)
@@ -65,6 +57,9 @@ class StaffSchedules extends Component
         $schedule->update(['is_booked' => true]);
 
         session()->flash('success', 'Booking confirmed!');
+
+        // Redirect to home page
+        return redirect()->route('customer.dashboard');
     }
 
     public function render()
@@ -74,3 +69,4 @@ class StaffSchedules extends Component
         ]);
     }
 }
+

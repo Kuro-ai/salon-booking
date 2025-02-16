@@ -12,10 +12,78 @@
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link href="{{ route('dashboard') }}" :active="request()->routeIs('dashboard')">
-                        {{ __('Dashboard') }}
-                    </x-nav-link>
+                
+                    @if(auth()->user() && auth()->user()->role === 'admin')
+
+                        <x-nav-link href="{{ route('dashboard') }}" :active="request()->routeIs('admin.dashboard')">
+                            {{ __('Dashboard') }}
+                        </x-nav-link>
+
+                        <x-nav-link href="{{ route('admin.categories') }}" :active="request()->routeIs('admin.categories')">
+                            <span>{!! __('Category') !!}</span>
+                        </x-nav-link>
+                
+                        <x-nav-link href="{{ route('admin.products') }}" :active="request()->routeIs('admin.products')">
+                            <span>{!! __('Products') !!}</span>
+                        </x-nav-link>
+                
+                        <x-nav-link href="{{ route('admin.orders') }}" :active="request()->routeIs('admin.orders')">
+                            <span>{!! __('Orders') !!}</span>
+                        </x-nav-link>
+                
+                        <x-nav-link href="{{ route('admin.users') }}" :active="request()->routeIs('admin.users')">
+                            <span>{!! __('Users') !!}</span>
+                        </x-nav-link>
+                
+                        <x-nav-link href="{{ route('admin.coupons') }}" :active="request()->routeIs('admin.coupons')">
+                            <span>{!! __('Coupons') !!}</span>
+                        </x-nav-link>
+                
+                        <x-nav-link href="{{ route('admin.advertisements') }}" :active="request()->routeIs('admin.advertisements')">
+                            <span>{!! __('Advertisement') !!}</span>
+                        </x-nav-link>
+                
+                        <x-nav-link href="{{ route('admin.services') }}" :active="request()->routeIs('admin.services')">
+                            <span>{!! __('Services') !!}</span>
+                        </x-nav-link>
+
+                        <x-nav-link href="{{ route('admin.bookings') }}" :active="request()->routeIs('admin.bookings')">
+                            <span>{!! __('Bookings') !!}</span>
+                        </x-nav-link>
+                    @endif
+
+                    @if(auth()->user() && auth()->user()->role === 'customer')
+
+                        <x-nav-link href="{{ route('dashboard') }}" :active="request()->routeIs('customer.dashboard')">
+                            {{ __('Dashboard') }}
+                        </x-nav-link>
+
+                        <x-nav-link href="{{ route('order.history') }}" :active="request()->routeIs('order.history')">
+                            {{ __('Order History') }}
+                        </x-nav-link>
+
+                        <x-nav-link href="{{ route('order.tracking') }}" :active="request()->routeIs('order.tracking')">
+                            {{ __('Track Order') }}
+                        </x-nav-link>
+
+                        <x-nav-link href="{{ route('wishlist') }}" :active="request()->routeIs('wishlist')">
+                            {{ __('Wishlist') }}
+                        </x-nav-link>
+
+                        <div class="flex items-center space-x-4">
+                            @livewire('customer.mini-cart')
+                        </div>
+
+                        <x-nav-link href="{{ route('service.list') }}" :active="request()->routeIs('service.list')">
+                            {{ __('Service List') }}
+                        </x-nav-link>
+
+                        <x-nav-link href="{{ route('bookings') }}" :active="request()->routeIs('bookings')">
+                            {{ __('Booking List') }}
+                        </x-nav-link>
+                    @endif
                 </div>
+                
             </div>
 
             <div class="hidden sm:flex sm:items-center sm:ms-6">
@@ -139,9 +207,76 @@
     <!-- Responsive Navigation Menu -->
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
         <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link href="{{ route('dashboard') }}" :active="request()->routeIs('dashboard')">
-                {{ __('Dashboard') }}
-            </x-responsive-nav-link>
+
+            @if(auth()->user() && auth()->user()->role === 'admin')
+                <x-responsive-nav-link href="{{ route('dashboard') }}" :active="request()->routeIs('admin.dashboard')">
+                    {{ __('Dashboard') }}
+                </x-responsive-nav-link>
+
+                <x-responsive-nav-link href="{{ route('admin.categories') }}" :active="request()->routeIs('admin.categories')">
+                    <span>{!! __('Category') !!}</span>
+                </x-responsive-nav-link>
+        
+                <x-responsive-nav-link href="{{ route('admin.products') }}" :active="request()->routeIs('admin.products')">
+                    <span>{!! __('Products') !!}</span>
+                </x-responsive-nav-link>
+        
+                <x-responsive-nav-link href="{{ route('admin.orders') }}" :active="request()->routeIs('admin.orders')">
+                    <span>{!! __('Orders') !!}</span>
+                </x-responsive-nav-link>
+        
+                <x-responsive-nav-link href="{{ route('admin.users') }}" :active="request()->routeIs('admin.users')">
+                    <span>{!! __('Users') !!}</span>
+                </x-responsive-nav-link>
+        
+                <x-responsive-nav-link href="{{ route('admin.coupons') }}" :active="request()->routeIs('admin.coupons')">
+                    <span>{!! __('Coupons') !!}</span>
+                </x-responsive-nav-link>
+        
+                <x-responsive-nav-link href="{{ route('admin.advertisements') }}" :active="request()->routeIs('admin.advertisements')">
+                    <span>{!! __('Advertisement') !!}</span>
+                </x-responsive-nav-link>
+        
+                <x-responsive-nav-link href="{{ route('admin.services') }}" :active="request()->routeIs('admin.services')">
+                    <span>{!! __('Services') !!}</span>
+                </x-responsive-nav-link>
+
+                <x-responsive-nav-link href="{{ route('admin.bookings') }}" :active="request()->routeIs('admin.bookings')">
+                    <span>{!! __('Bookings') !!}</span>
+                </x-responsive-nav-link>      
+             @endif
+
+            @if(auth()->user() && auth()->user()->role === 'customer')
+
+                <x-responsive-nav-link href="{{ route('dashboard') }}" :active="request()->routeIs('customer.dashboard')">
+                    {{ __('Dashboard') }}
+                </x-responsive-nav-link>
+
+                <x-responsive-nav-link href="{{ route('order.history') }}" :active="request()->routeIs('order.history')">
+                    {{ __('Order History') }}
+                </x-responsive-nav-link>
+
+                <x-responsive-nav-link href="{{ route('order.tracking') }}" :active="request()->routeIs('order.tracking')">
+                    {{ __('Track Order') }}
+                </x-responsive-nav-link>
+
+                <x-responsive-nav-link href="{{ route('wishlist') }}" :active="request()->routeIs('wishlist')">
+                    {{ __('Wishlist') }}
+                </x-responsive-nav-link>
+
+                <div class="flex items-center space-x-4">
+                    @livewire('customer.mini-cart')
+                </div>
+
+                <x-responsive-nav-link href="{{ route('service.list') }}" :active="request()->routeIs('service.list')">
+                    {{ __('Service List') }}
+                </x-responsive-nav-link>
+                            
+                <x-responsive-nav-link href="{{ route('bookings') }}" :active="request()->routeIs('bookings')">
+                    {{ __('Booking List') }}
+                </x-responsive-nav-link>
+                        
+            @endif
         </div>
 
         <!-- Responsive Settings Options -->

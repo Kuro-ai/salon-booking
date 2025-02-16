@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('service_id')->constrained()->onDelete('cascade');
             $table->foreignId('staff_id')->constrained()->onDelete('cascade');
             $table->foreignId('schedule_id')->constrained('staff_schedules')->onDelete('cascade');
-            $table->enum('status', ['pending', 'approved'])->default('approved'); // Auto-approved
+            $table->enum('status', ['pending', 'approved', 'cancelled'])->default('approved');
             $table->timestamps();
         });
         

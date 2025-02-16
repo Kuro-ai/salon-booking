@@ -22,13 +22,14 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin/services', \App\Livewire\Admin\ManageServices::class)->name('admin.services');
     Route::get('/admin/staff', \App\Livewire\Admin\ManageStaff::class)->name('admin.staff');
     Route::get('/admin/staff-schedules', \App\Livewire\Admin\ManageStaffSchedules::class)->name('admin.staff-schedules');
+    Route::get('/admin/bookings', \App\Livewire\Admin\ManageBookings::class)->name('admin.bookings');
 });
 
 Route::middleware(['auth', 'customer'])->group(function () {
     // Route::get('/', \App\Livewire\Customer\Homepage::class)->name('customer.homepage');
-    Route::get('/customer/dashboard', function () {
-        return view('customer.dashboard');
-    })->name('customer.dashboard');
+    // Route::get('/customer/dashboard', function () {
+    //     return view('customer.dashboard');
+    // })->name('customer.dashboard');
     Route::get('/product/{productId}', \App\Livewire\Customer\ProductDetails::class)->name('product.details');
     Route::get('/cart', \App\Livewire\Customer\ShoppingCart::class)->name('cart');
     Route::get('/checkout', \App\Livewire\Customer\Checkout::class)->name('checkout');
@@ -39,6 +40,7 @@ Route::middleware(['auth', 'customer'])->group(function () {
     Route::get('/services', \App\Livewire\Customer\ServicesList::class)->name('service.list');
     Route::get('/service/{serviceId}/book', \App\Livewire\Customer\StaffSchedules::class)
     ->name('service.book');
+    Route::get('/bookings', \App\Livewire\Customer\CustomerBookings::class)->name('bookings');
 });
 
 Route::middleware([
