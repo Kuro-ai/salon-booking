@@ -13,13 +13,10 @@ class Advertisements extends Component
 
     public $ads = [];
     public $newImage, $newTitle, $newText, $newLink;
-    public $editingId = null, $editTitle, $editText, $editLink;
+    public $editingId = null, $editTitle, $editText, $editLink, $editImage;
     public $confirmingDelete = null;
-
-    public function mount()
-    {
-        $this->ads = Advertisement::all()->toArray();
-    }
+    public $editImagePreview;
+    public $search = '';
 
     public function addAd()
     {
@@ -41,27 +38,25 @@ class Advertisements extends Component
 
         $this->ads[] = $ad->toArray();
         $this->reset(['newImage', 'newTitle', 'newText', 'newLink']);
+
+        session()->flash('message', 'Advertisement added successfully!');
     }
 
-    public function editAd($id, $title, $text, $link)
-    {
-        $this->editingId = $id;
-        $this->editTitle = $title;
-        $this->editText = $text;
-        $this->editLink = $link;
-    }
-
-    public function saveEdit($id)
+    public function editAd($id)
     {
         $ad = Advertisement::findOrFail($id);
-        $ad->update([
-            'title' => $this->editTitle,
-            'text' => $this->editText,
-            'link' => $this->editLink,
-        ]);
+        $this->editingId = $id;
+        $this->editTitle = $ad->title;
+        $this->editText = $ad->text;
+        $this->editLink = $ad->link;
+        $this->editImage = null;
+    }
 
-        $this->ads = Advertisement::all()->toArray();
-        $this->editingId = null;
+    public function updatedEditImage()
+    {
+        if ($this->editImage) {
+            $this->editImagePreview = $this->editImage->temporaryUrl();
+        }
     }
 
     public function cancelEdit()
@@ -87,10 +82,37 @@ class Advertisements extends Component
 
         $this->ads = Advertisement::all()->toArray();
         $this->confirmingDelete = null;
+
+        session()->flash('message', 'Advertisement deleted successfully!');
+    }
+
+    public function saveEdit($id)
+    {
+        $ad = Advertisement::findOrFail($id);
+
+        if ($this->editImage) {
+            Storage::delete('public/' . $ad->image);
+            $imagePath = $this->editImage->store('advertisements', 'public');
+            $ad->image = $imagePath;
+        }
+
+        $ad->update([
+            'title' => $this->editTitle,
+            'text' => $this->editText,
+            'link' => $this->editLink,
+        ]);
+
+        $this->ads = Advertisement::all()->toArray();
+        $this->editingId = null;
+
+        session()->flash('message', 'Advertisement updated successfully!');
     }
 
     public function render()
     {
+        $this->ads = Advertisement::whereRaw('LOWER(title) LIKE ?', ['%' . strtolower($this->search) . '%'])->get()->toArray();
+
         return view('livewire.admin.advertisements');
     }
+
 }

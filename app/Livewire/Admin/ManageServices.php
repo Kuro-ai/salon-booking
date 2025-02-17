@@ -5,68 +5,111 @@ namespace App\Livewire\Admin;
 use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\Service;
+use Illuminate\Support\Facades\Session;
 
 class ManageServices extends Component
 {
     use WithPagination;
 
-    public $name, $price, $description, $serviceId;
-    public $isEditing = false;
+    public $search = '';
+    public $newService = '';
+    public $newPrice = '';
+    public $newDescription = '';
 
-    protected $rules = [
-        'name' => 'required|string|max:255',
-        'price' => 'required|numeric|min:0',
-        'description' => 'nullable|string',
-    ];
+    public $editingId = null;
+    public $editName = '';
+    public $editPrice = '';
+    public $editDescription = '';
 
-    public function createService()
+    public $confirmingDelete = null;
+
+    protected $queryString = ['search'];
+
+    public function updatingSearch()
     {
-        $this->validate();
-        Service::create([
-            'name' => $this->name,
-            'price' => $this->price,
-            'description' => $this->description,
-        ]);
-        $this->resetForm();
+        $this->resetPage();
+    }
+
+    public function addService()
+    {
+        if (!empty(trim($this->newService)) && is_numeric($this->newPrice)) {
+            Service::create([
+                'name' => $this->newService,
+                'price' => $this->newPrice,
+                'description' => $this->newDescription,
+            ]);
+
+            session()->flash('message', 'Service added successfully!');
+            $this->resetNewService();
+        }
     }
 
     public function editService($id)
     {
-        $service = Service::findOrFail($id);
-        $this->serviceId = $id;
-        $this->name = $service->name;
-        $this->price = $service->price;
-        $this->description = $service->description;
-        $this->isEditing = true;
+        $service = Service::find($id);
+        if ($service) {
+            $this->editingId = $id;
+            $this->editName = $service->name;
+            $this->editPrice = $service->price;
+            $this->editDescription = $service->description;
+        }
     }
 
-    public function updateService()
+    public function saveEdit($id)
     {
-        $this->validate();
-        Service::where('id', $this->serviceId)->update([
-            'name' => $this->name,
-            'price' => $this->price,
-            'description' => $this->description,
-        ]);
-        $this->resetForm();
+        $service = Service::find($id);
+        if ($service) {
+            $service->update([
+                'name' => $this->editName,
+                'price' => $this->editPrice,
+                'description' => $this->editDescription,
+            ]);
+
+            session()->flash('message', 'Service updated successfully!');
+        }
+        $this->cancelEdit();
+    }
+
+    public function cancelEdit()
+    {
+        $this->editingId = null;
+        $this->editName = '';
+        $this->editPrice = '';
+        $this->editDescription = '';
+    }
+
+    public function confirmDelete($id)
+    {
+        $this->confirmingDelete = $id;
+    }
+
+    public function cancelDelete()
+    {
+        $this->confirmingDelete = null;
     }
 
     public function deleteService($id)
     {
         Service::destroy($id);
+        session()->flash('message', 'Service deleted successfully!');
+        $this->confirmingDelete = null;
     }
 
-    private function resetForm()
+    private function resetNewService()
     {
-        $this->name = $this->price = $this->description = null;
-        $this->isEditing = false;
+        $this->newService = '';
+        $this->newPrice = '';
+        $this->newDescription = '';
     }
 
     public function render()
     {
+        $services = Service::whereRaw('LOWER(name) LIKE ?', ['%' . strtolower($this->search) . '%'])
+            ->orderBy('id', 'desc')
+            ->paginate(5);
+
         return view('livewire.admin.manage-services', [
-            'services' => Service::paginate(10),
+            'services' => $services
         ]);
     }
 }
-

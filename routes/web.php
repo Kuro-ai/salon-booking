@@ -27,9 +27,9 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
 Route::middleware(['auth', 'customer'])->group(function () {
     // Route::get('/', \App\Livewire\Customer\Homepage::class)->name('customer.homepage');
-    // Route::get('/customer/dashboard', function () {
-    //     return view('customer.dashboard');
-    // })->name('customer.dashboard');
+    Route::get('/customer/dashboard', function () {
+        return view('customer.dashboard');
+    })->name('customer.dashboard');
     Route::get('/product/{productId}', \App\Livewire\Customer\ProductDetails::class)->name('product.details');
     Route::get('/cart', \App\Livewire\Customer\ShoppingCart::class)->name('cart');
     Route::get('/checkout', \App\Livewire\Customer\Checkout::class)->name('checkout');

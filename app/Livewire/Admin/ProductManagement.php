@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace App\Livewire\Admin;
 
@@ -7,85 +7,117 @@ use App\Models\Product;
 use App\Models\Category;
 use Illuminate\Support\Str;
 use Livewire\WithFileUploads;
+use Livewire\WithPagination;
 
 class ProductManagement extends Component
 {
-    use WithFileUploads;
+    use WithFileUploads, WithPagination;
 
-    public $products, $categories;
-    public $newProduct = [
-        'name' => '',
-        'description' => '',
-        'price' => '',
-        'stock' => '',
-        'category_id' => '',
-        'image' => null
+    public $newProductName = '';
+    public $newProductDescription = '';
+    public $newProductPrice = '';
+    public $newProductStock = '';
+    public $newProductCategoryId = '';
+    public $newProductImage = null;
+
+    public $editingId = null, $editName, $editDescription, $editPrice, $editStock, $editCategory, $editImage, $editImagePreview;
+    public $confirmingDelete = null;
+    public $search = '', $categoryFilter = '';
+
+    protected $rules = [
+        'newProductName' => 'required|string',
+        'newProductDescription' => 'nullable|string',
+        'newProductPrice' => 'required|numeric|min:0',
+        'newProductStock' => 'required|integer|min:0',
+        'newProductCategoryId' => 'required|exists:categories,id',
+        'newProductImage' => 'nullable|image|max:1024',
     ];
 
-    public function mount()
+    public function updatedSearch()
     {
-        $this->loadProducts();
-        $this->categories = Category::orderBy('name')->get();
+        $this->resetPage(); // Reset pagination when search query changes
     }
 
-    public function loadProducts()
+    public function updatedCategoryFilter()
     {
-        $this->products = Product::orderBy('id', 'desc')->get();
+        $this->resetPage(); // Reset pagination when category filter changes
     }
 
-    public function addProduct()
+    public function editProduct($id)
     {
-        $validatedData = $this->validate([
-            'newProduct.name' => 'required|string',
-            'newProduct.description' => 'nullable|string',
-            'newProduct.price' => 'required|numeric|min:0',
-            'newProduct.stock' => 'required|integer|min:0',
-            'newProduct.category_id' => 'required|exists:categories,id',
-            'newProduct.image' => 'nullable|image|max:1024',
-        ]);
+        $product = Product::findOrFail($id);
+        $this->editingId = $id;
+        $this->editName = $product->name;
+        $this->editDescription = $product->description;
+        $this->editPrice = $product->price;
+        $this->editStock = $product->stock;
+        $this->editCategory = $product->category_id;
+        $this->editImage = null;
+        $this->editImagePreview = $product->image ? asset('storage/' . $product->image) : null;
+    }
 
-        // Handle image upload
-        if ($this->newProduct['image']) {
-            $imagePath = $this->newProduct['image']->store('products', 'public');
-            $validatedData['newProduct']['image'] = $imagePath;
+    public function updatedEditImage()
+    {
+        if ($this->editImage) {
+            $this->editImagePreview = $this->editImage->temporaryUrl();
         }
-
-        Product::create([
-            'name' => $validatedData['newProduct']['name'],
-            'slug' => Str::slug($validatedData['newProduct']['name']),
-            'description' => $validatedData['newProduct']['description'],
-            'price' => $validatedData['newProduct']['price'],
-            'stock' => $validatedData['newProduct']['stock'],
-            'category_id' => $validatedData['newProduct']['category_id'],
-            'image' => $validatedData['newProduct']['image'] ?? null
-        ]);
-
-        // Reset input fields
-        $this->newProduct = ['name' => '', 'description' => '', 'price' => '', 'stock' => '', 'category_id' => '', 'image' => null];
-        $this->loadProducts();
     }
 
-    public function updateProduct($id, $field, $value)
+    public function saveEdit()
     {
-        $product = Product::find($id);
+        $product = Product::find($this->editingId);
+
         if ($product) {
-            $product->$field = $value;
-            if ($field == 'name') {
-                $product->slug = Str::slug($value);
+            $updateData = [
+                'name' => $this->editName,
+                'slug' => Str::slug($this->editName),
+                'description' => $this->editDescription,
+                'price' => $this->editPrice,
+                'stock' => $this->editStock,
+                'category_id' => $this->editCategory,
+            ];
+
+            if ($this->editImage) {
+                $imagePath = $this->editImage->store('products', 'public');
+                $updateData['image'] = $imagePath;
             }
-            $product->save();
-            $this->loadProducts();
+
+            $product->update($updateData);
+            session()->flash('message', 'Product updated successfully!');
         }
+
+        $this->cancelEdit();
+    }
+
+    public function cancelEdit()
+    {
+        $this->editingId = null;
+    }
+
+    public function confirmDelete($id)
+    {
+        $this->confirmingDelete = $id;
     }
 
     public function deleteProduct($id)
     {
-        Product::find($id)?->delete();
-        $this->loadProducts();
+        Product::destroy($id);
+        session()->flash('message', 'Product deleted successfully!');
+        $this->confirmingDelete = null;
     }
 
     public function render()
     {
-        return view('livewire.admin.product-management');
+        $products = Product::orderBy('id', 'desc')
+            ->where('name', 'like', '%' . strtolower($this->search) . '%')
+            ->when($this->categoryFilter, function ($query) {
+                return $query->where('category_id', $this->categoryFilter);
+            })
+            ->paginate(10);
+
+        return view('livewire.admin.product-management', [
+            'products' => $products,
+            'categories' => Category::orderBy('name')->get(),
+        ]);
     }
 }

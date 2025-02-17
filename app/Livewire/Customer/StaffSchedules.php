@@ -51,7 +51,7 @@ class StaffSchedules extends Component
             'service_id' => $this->serviceId,
             'staff_id' => $schedule->staff_id,
             'schedule_id' => $schedule->id,
-            'status' => 'approved', // Auto-approve
+            'status' => 'pending', // Set status to pending
         ]);
 
         $schedule->update(['is_booked' => true]);

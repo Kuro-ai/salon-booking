@@ -10,52 +10,93 @@ class ManageStaff extends Component
 {
     use WithPagination;
 
-    public $name, $specialty, $staffId;
-    public $isEditing = false;
+    public $search = '';
+    public $newName, $newSpecialty;
+    public $editingId = null;
+    public $editName, $editSpecialty;
+    public $confirmingDelete = null;
 
     protected $rules = [
-        'name' => 'required|string|max:255',
-        'specialty' => 'required|string|max:255',
+        'newName' => 'required|string|max:255',
+        'newSpecialty' => 'required|string|max:255',
     ];
 
-    public function createStaff()
+    public function updatingSearch()
+    {
+        $this->resetPage();
+    }
+
+    public function addStaff()
     {
         $this->validate();
-        Staff::create(['name' => $this->name, 'specialty' => $this->specialty]);
-        $this->resetForm();
+
+        Staff::create([
+            'name' => $this->newName,
+            'specialty' => $this->newSpecialty,
+        ]);
+
+        session()->flash('message', 'Staff member added successfully!');
+        $this->resetNewStaff();
     }
 
     public function editStaff($id)
     {
         $staff = Staff::findOrFail($id);
-        $this->staffId = $id;
-        $this->name = $staff->name;
-        $this->specialty = $staff->specialty;
-        $this->isEditing = true;
+        $this->editingId = $id;
+        $this->editName = $staff->name;
+        $this->editSpecialty = $staff->specialty;
     }
 
-    public function updateStaff()
+    public function saveEdit($id)
     {
-        $this->validate();
-        Staff::where('id', $this->staffId)->update(['name' => $this->name, 'specialty' => $this->specialty]);
-        $this->resetForm();
+        $staff = Staff::find($id);
+
+        if ($staff) {
+            $staff->update([
+                'name' => $this->editName,
+                'specialty' => $this->editSpecialty,
+            ]);
+
+            session()->flash('message', 'Staff updated successfully!');
+        }
+
+        $this->cancelEdit();
+    }
+
+    public function cancelEdit()
+    {
+        $this->editingId = null;
+        $this->editName = $this->editSpecialty = null;
+    }
+
+    public function confirmDelete($id)
+    {
+        $this->confirmingDelete = $id;
+    }
+
+    public function cancelDelete()
+    {
+        $this->confirmingDelete = null;
     }
 
     public function deleteStaff($id)
     {
         Staff::destroy($id);
+        session()->flash('message', 'Staff deleted successfully!');
+        $this->confirmingDelete = null;
     }
 
-    private function resetForm()
+    private function resetNewStaff()
     {
-        $this->name = $this->specialty = null;
-        $this->isEditing = false;
+        $this->newName = $this->newSpecialty = null;
     }
 
     public function render()
     {
-        return view('livewire.admin.manage-staff', [
-            'staff' => Staff::paginate(10),
-        ]);
+        $staff = Staff::whereRaw('LOWER(name) LIKE ?', ['%' . strtolower($this->search) . '%'])
+            ->orderBy('id', 'desc')
+            ->paginate(10);
+
+        return view('livewire.admin.manage-staff', compact('staff'));
     }
 }

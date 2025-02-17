@@ -50,6 +50,14 @@
                         <x-nav-link href="{{ route('admin.bookings') }}" :active="request()->routeIs('admin.bookings')">
                             <span>{!! __('Bookings') !!}</span>
                         </x-nav-link>
+
+                        <x-nav-link href="{{ route('admin.staff') }}" :active="request()->routeIs('admin.staff')">
+                            <span>{!! __('Staff') !!}</span>
+                        </x-nav-link>  
+        
+                        <x-nav-link href="{{ route('admin.staff-schedules') }}" :active="request()->routeIs('admin.staff-schedules')">
+                            <span>{!! __('Schedules') !!}</span>
+                        </x-nav-link>  
                     @endif
 
                     @if(auth()->user() && auth()->user()->role === 'customer')
@@ -243,7 +251,15 @@
 
                 <x-responsive-nav-link href="{{ route('admin.bookings') }}" :active="request()->routeIs('admin.bookings')">
                     <span>{!! __('Bookings') !!}</span>
-                </x-responsive-nav-link>      
+                </x-responsive-nav-link>   
+                
+                <x-responsive-nav-link href="{{ route('admin.staff') }}" :active="request()->routeIs('admin.staff')">
+                    <span>{!! __('Staff') !!}</span>
+                </x-responsive-nav-link>  
+
+                <x-responsive-nav-link href="{{ route('admin.staff-schedules') }}" :active="request()->routeIs('admin.staff-schedules')">
+                    <span>{!! __('Schedules') !!}</span>
+                </x-responsive-nav-link>  
              @endif
 
             @if(auth()->user() && auth()->user()->role === 'customer')

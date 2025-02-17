@@ -9,19 +9,33 @@ use Carbon\Carbon;
 class Coupons extends Component
 {
     public $code, $discount_type = 'fixed', $discount_value, $minimum_order_amount, $expires_at;
+    public $coupons;
     public $editingId = null;
+    public $confirmingDelete = null;
+    public $search = '';
 
-    protected $rules = [
-        'code' => 'required|unique:coupons,code',
-        'discount_type' => 'required|in:fixed,percentage',
-        'discount_value' => 'required|numeric|min:1',
-        'minimum_order_amount' => 'nullable|numeric|min:0',
-        'expires_at' => 'nullable|date|after:today',
-    ];
+
+    public function mount()
+    {
+        $this->loadCoupons();
+    }
+
+    public function loadCoupons()
+    {
+        $this->coupons = Coupon::whereRaw('LOWER(code) LIKE ?', ['%' . strtolower($this->search) . '%'])
+            ->orderBy('id', 'desc')
+            ->get();
+    }
 
     public function addCoupon()
     {
-        $this->validate();
+        $this->validate([
+            'code' => 'required|unique:coupons,code',
+            'discount_type' => 'required|in:fixed,percentage',
+            'discount_value' => 'required|numeric|min:1',
+            'minimum_order_amount' => 'nullable|numeric|min:0',
+            'expires_at' => 'nullable|date|after:today',
+        ]);
 
         Coupon::create([
             'code' => strtoupper($this->code),
@@ -31,8 +45,9 @@ class Coupons extends Component
             'expires_at' => $this->expires_at ? Carbon::parse($this->expires_at) : null,
         ]);
 
-        $this->resetFields();
         session()->flash('message', 'Coupon added successfully!');
+        $this->resetFields();
+        $this->loadCoupons();
     }
 
     public function editCoupon($id)
@@ -48,8 +63,6 @@ class Coupons extends Component
 
     public function updateCoupon()
     {
-        $this->validate();
-
         Coupon::where('id', $this->editingId)->update([
             'code' => strtoupper($this->code),
             'discount_type' => $this->discount_type,
@@ -58,14 +71,22 @@ class Coupons extends Component
             'expires_at' => $this->expires_at ? Carbon::parse($this->expires_at) : null,
         ]);
 
-        $this->resetFields();
         session()->flash('message', 'Coupon updated successfully!');
+        $this->resetFields();
+        $this->loadCoupons();
+    }
+
+    public function confirmDelete($id)
+    {
+        $this->confirmingDelete = $id;
     }
 
     public function deleteCoupon($id)
     {
         Coupon::destroy($id);
         session()->flash('message', 'Coupon deleted successfully!');
+        $this->confirmingDelete = null;
+        $this->loadCoupons();
     }
 
     public function resetFields()
@@ -75,8 +96,7 @@ class Coupons extends Component
 
     public function render()
     {
-        return view('livewire.admin.coupons', [
-            'coupons' => Coupon::latest()->get(),
-        ]);
+        $this->loadCoupons();
+        return view('livewire.admin.coupons');
     }
 }
