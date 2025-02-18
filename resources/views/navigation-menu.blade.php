@@ -70,17 +70,9 @@
                             {{ __('Order History') }}
                         </x-nav-link>
 
-                        <x-nav-link href="{{ route('order.tracking') }}" :active="request()->routeIs('order.tracking')">
-                            {{ __('Track Order') }}
-                        </x-nav-link>
-
                         <x-nav-link href="{{ route('wishlist') }}" :active="request()->routeIs('wishlist')">
                             {{ __('Wishlist') }}
                         </x-nav-link>
-
-                        <div class="flex items-center space-x-4">
-                            @livewire('customer.mini-cart')
-                        </div>
 
                         <x-nav-link href="{{ route('service.list') }}" :active="request()->routeIs('service.list')">
                             {{ __('Service List') }}
@@ -89,6 +81,10 @@
                         <x-nav-link href="{{ route('bookings') }}" :active="request()->routeIs('bookings')">
                             {{ __('Booking List') }}
                         </x-nav-link>
+
+                        <div class="flex items-center space-x-4">
+                            @livewire('customer.mini-cart')
+                        </div>
                     @endif
                 </div>
                 
@@ -272,17 +268,9 @@
                     {{ __('Order History') }}
                 </x-responsive-nav-link>
 
-                <x-responsive-nav-link href="{{ route('order.tracking') }}" :active="request()->routeIs('order.tracking')">
-                    {{ __('Track Order') }}
-                </x-responsive-nav-link>
-
                 <x-responsive-nav-link href="{{ route('wishlist') }}" :active="request()->routeIs('wishlist')">
                     {{ __('Wishlist') }}
                 </x-responsive-nav-link>
-
-                <div class="flex items-center space-x-4">
-                    @livewire('customer.mini-cart')
-                </div>
 
                 <x-responsive-nav-link href="{{ route('service.list') }}" :active="request()->routeIs('service.list')">
                     {{ __('Service List') }}
@@ -291,6 +279,10 @@
                 <x-responsive-nav-link href="{{ route('bookings') }}" :active="request()->routeIs('bookings')">
                     {{ __('Booking List') }}
                 </x-responsive-nav-link>
+
+                <div class="flex items-center space-x-4">
+                    @livewire('customer.mini-cart')
+                </div>
                         
             @endif
         </div>

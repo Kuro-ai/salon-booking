@@ -14,7 +14,6 @@
         <thead>
             <tr class="bg-gray-200">
                 <th class="p-2 border">Name</th>
-                <th class="p-2 border">Specialty</th>
                 <th class="p-2 border">Actions</th>
             </tr>
         </thead>
@@ -22,7 +21,6 @@
             <!-- New Staff Row -->
             <tr class="hover:bg-gray-100 transition">
                 <td class="p-2 border"><input type="text" wire:model="newName" placeholder="Staff Name" class="border p-1 w-full"></td>
-                <td class="p-2 border"><input type="text" wire:model="newSpecialty" placeholder="Specialty" class="border p-1 w-full"></td>
                 <td class="p-2 border text-center">
                     <button wire:click="addStaff" class="bg-green-500 text-white px-2 py-1 rounded">Add</button>
                 </td>

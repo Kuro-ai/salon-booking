@@ -1,20 +1,15 @@
 <div class="container mx-auto p-6">
-    <div x-data="carousel({{ count($ads ?? []) }})" class="relative w-full overflow-hidden">
+    <!-- Advertisement Carousel -->
+    <div x-data="carousel({{ count($ads ?? []) }})" class="relative w-full overflow-hidden rounded-lg shadow-lg">
         <div class="flex transition-transform duration-500 ease-in-out" :style="'transform: translateX(-' + (currentIndex * 100) + '%)'" wire:ignore.self>
             @foreach($ads as $index => $ad)
                 <div class="w-full flex-shrink-0 relative">
-                    <a href="{{ $ad->link }}">
-                        <!-- Ad Container -->
-                        <div class="relative">
-                            <!-- Ad Image -->
-                            <img src="{{ asset('storage/' . $ad->image) }}" class="w-full h-64 object-cover">
-                            <!-- Ad Text Title -->
-                            <div class="absolute bottom-12 left-4 text-white text-lg bg-black bg-opacity-50 p-2">
-                                {{ $ad->title }}
-                            </div>
-                            <!-- Ad Text Description -->
-                            <div class="absolute bottom-2 left-4 text-white text-sm bg-black bg-opacity-50 p-2">
-                                {{ $ad->text }}
+                    <a href="{{ $ad->link }}" class="block">
+                        <div class="relative rounded-lg overflow-hidden shadow-lg">
+                            <img src="{{ asset('storage/' . $ad->image) }}" class="w-full h-64 object-cover rounded-lg">
+                            <div class="absolute inset-0 bg-black bg-opacity-40 flex flex-col justify-end p-4">
+                                <h3 class="text-white text-xl font-semibold">{{ $ad->title }}</h3>
+                                <p class="text-white text-sm">{{ $ad->text }}</p>
                             </div>
                         </div>
                     </a>
@@ -22,105 +17,169 @@
             @endforeach
         </div>
 
-        <!-- Navigation Dots -->
-        <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
-            @foreach($ads as $index => $ad)
-                <div class="w-3 h-3 rounded-full cursor-pointer"
-                    :class="currentIndex === {{ $index }} ? 'bg-white' : 'bg-gray-400'"
-                    @click="currentIndex = {{ $index }}">
-                </div>
-            @endforeach
-        </div>
-
         <!-- Navigation Arrows -->
-        <button @click="prevSlide" class="absolute left-0 top-1/2 transform -translate-y-1/2 text-white bg-black bg-opacity-50 p-2">
+        <button @click="prevSlide" class="absolute left-2 top-1/2 transform -translate-y-1/2 text-white bg-gray-800 bg-opacity-75 p-3 rounded-full shadow-lg hover:bg-gray-900">
             &#10094;
         </button>
-        <button @click="nextSlide" class="absolute right-0 top-1/2 transform -translate-y-1/2 text-white bg-black bg-opacity-50 p-2">
+        <button @click="nextSlide" class="absolute right-2 top-1/2 transform -translate-y-1/2 text-white bg-gray-800 bg-opacity-75 p-3 rounded-full shadow-lg hover:bg-gray-900">
             &#10095;
         </button>
 
-        <script>
-            document.addEventListener('alpine:init', () => {
-                Alpine.data('carousel', (adsCount) => ({
-                    currentIndex: 0,
-                    adsCount: adsCount, 
-                    startX: 0,
-                    endX: 0,
-                    touchStart(event) {
-                        this.startX = event.touches[0].clientX;
-                    },
-                    touchEnd(event) {
-                        this.endX = event.changedTouches[0].clientX;
-                        this.handleSwipe();
-                    },
-                    handleSwipe() {
-                        let diff = this.startX - this.endX;
-                        if (diff > 50) {
-                            this.nextSlide();
-                        } else if (diff < -50) {
-                            this.prevSlide();
-                        }
-                    },
-                    nextSlide() {
-                        this.currentIndex = (this.currentIndex + 1) % this.adsCount;
-                    },
-                    prevSlide() {
-                        this.currentIndex = (this.currentIndex - 1 + this.adsCount) % this.adsCount;
-                    },
-                    autoRotate() {
-                        if (this.adsCount > 0) {
-                            setInterval(() => { this.nextSlide(); }, 5000);
-                        }
-                    },
-                    init() {
-                        this.autoRotate();
-                    }
-                }));
-            });
-        </script>
+        <!-- Dots -->
+        <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
+            @foreach($ads as $index => $ad)
+                <div class="w-3 h-3 rounded-full cursor-pointer transition-all duration-300"
+                    :class="currentIndex === {{ $index }} ? 'bg-white scale-125' : 'bg-gray-400'"
+                    @click="currentIndex = {{ $index }}"></div>
+            @endforeach
+        </div>
     </div>
+
+    <!-- Success Message -->
     @if (session()->has('success'))
-        <div class="bg-green-200 text-green-700 p-3 mt-3">
+        <div class="bg-green-100 text-green-700 p-3 mt-3 rounded-md shadow-md">
             {{ session('success') }}
         </div>
     @endif
-    
-    <h2 class="text-2xl font-bold mb-4">Shop Products</h2>
 
     <!-- Filters -->
-    <div class="mb-6 flex space-x-4">
-        <input type="text" wire:model.debounce.500ms="search" class="border p-2 w-1/3" placeholder="Search products...">
-        
-        <select wire:model="categoryFilter" class="border p-2">
-            <option value="">All Categories</option>
-            @foreach($categories as $category)
-                <option value="{{ $category->id }}">{{ $category->name }}</option>
-            @endforeach
-        </select>
+    <div class="bg-white p-6 rounded-lg shadow-md mt-8">
+        <h2 class="text-2xl font-bold mb-4 text-gray-800">Find Your Perfect Product</h2>
+        <div class="flex space-x-4">
+            <input type="text" wire:model.live="search" class="border p-3 w-1/3 rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="Search products...">
+            
+            <select wire:model.live="categoryFilter" class="border p-3 rounded-lg focus:ring-2 focus:ring-blue-500">
+                <option value="">All Categories</option>
+                @foreach($categories as $category)
+                    <option value="{{ $category->id }}">{{ $category->name }}</option>
+                @endforeach
+            </select>
 
-        <input type="number" wire:model.live="minPrice" class="border p-2 w-1/6" placeholder="Min Price">
-        <input type="number" wire:model.live="maxPrice" class="border p-2 w-1/6" placeholder="Max Price">
+            <input type="number" min=0 wire:model.live="minPrice" class="border p-3 w-1/6 rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="Min Price">
+            <input type="number" min=20 wire:model.live="maxPrice" class="border p-3 w-1/6 rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="Max Price">
+        </div>
     </div>
 
-    <!-- Product Grid -->
-    <div class="grid grid-cols-4 gap-6">
-        @foreach($products as $product)
-            <div class="border p-4 shadow">
-                <img src="{{ asset('storage/' . $product->image) }}" class="w-full h-40 object-cover mb-2">
-                <h3 class="font-bold">{{ $product->name }}</h3>
-                <p class="text-gray-500">${{ number_format($product->price, 2) }}</p>
-                <button wire:click="addToCart({{ $product->id }})"
-                    class="bg-blue-500 text-white px-4 py-2 mt-2 rounded hover:bg-blue-700">
-                    Add to Cart
-                </button>
-                <a href="{{ route('product.details', $product->id) }}" class="text-blue-500">View Details</a>
-            </div>
+    <!-- Include Swiper.js CSS & JS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.js"></script>
+
+    <!-- Product Carousel -->
+    <div class="container mx-auto p-6">
+        @foreach($categories as $category)
+            @if($category->products->count() > 0)
+                <div class="mt-8">
+                    <h2 class="text-2xl font-bold text-gray-800">{{ $category->name }}</h2>
+                    
+                    <!-- Swiper Carousel -->
+                    <div class="swiper mySwiper mt-4">
+                        <div class="swiper-wrapper">
+                            @foreach($category->products as $product)
+                                @php
+                                    $isNew = $loop->index < 3 && now()->diffInDays($product->created_at) <= 7;
+                                @endphp
+
+                                <div class="swiper-slide bg-white p-4 rounded-lg shadow-md hover:shadow-xl transition-transform transform hover:-translate-y-1 border border-gray-200">
+                                    <a href="{{ route('product.details', $product->id) }}" class="block">
+                                        <div class="relative">
+                                            <img src="{{ asset('storage/' . $product->image) }}" class="w-full h-48 object-cover rounded-lg">
+                                            @if ($isNew)
+                                                <span class="absolute top-2 left-2 bg-blue-500 text-white text-xs font-semibold px-2 py-1 rounded">
+                                                    New
+                                                </span>
+                                            @endif
+                                        </div>
+                                        <h3 class="font-semibold text-lg mt-3 text-gray-900">{{ $product->name }}</h3>
+                                        <p class="text-blue-600 text-lg font-bold mt-2">${{ number_format($product->price, 2) }}</p>
+                                    </a>
+
+                                    <div class="mt-4 flex items-center justify-between">
+                                        <button wire:click="addToCart({{ $product->id }})"
+                                            class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-all flex items-center justify-center w-full">
+                                            🛒 Add to Cart
+                                        </button>
+                                    </div>
+
+                                    <div class="mt-2 text-center">
+                                        <a href="{{ route('product.details', $product->id) }}" class="text-blue-500 hover:underline text-sm">
+                                            View Details →
+                                        </a>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                        <!-- Pagination & Navigation -->
+                        <div class="swiper-pagination"></div>
+                        <div class="swiper-button-next"></div>
+                        <div class="swiper-button-prev"></div>
+                    </div>
+                </div>
+            @endif
         @endforeach
     </div>
 
-    <!-- Pagination -->
-    <div class="mt-6">
-        {{ $products->links() }}
-    </div>
+    <!-- Initialize Swiper -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            new Swiper(".mySwiper", {
+                slidesPerView: 1,
+                spaceBetween: 10,
+                loop: true,
+                navigation: {
+                    nextEl: ".swiper-button-next",
+                    prevEl: ".swiper-button-prev",
+                },
+                pagination: {
+                    el: ".swiper-pagination",
+                    clickable: true,
+                },
+                breakpoints: {
+                    640: { slidesPerView: 2 },
+                    768: { slidesPerView: 3 },
+                    1024: { slidesPerView: 4 },
+                },
+            });
+        });
+    </script>
+
 </div>
+
+<script>
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('carousel', (adsCount) => ({
+            currentIndex: 0,
+            adsCount: adsCount, 
+            startX: 0,
+            endX: 0,
+            touchStart(event) {
+                this.startX = event.touches[0].clientX;
+            },
+            touchEnd(event) {
+                this.endX = event.changedTouches[0].clientX;
+                this.handleSwipe();
+            },
+            handleSwipe() {
+                let diff = this.startX - this.endX;
+                if (diff > 50) {
+                    this.nextSlide();
+                } else if (diff < -50) {
+                    this.prevSlide();
+                }
+            },
+            nextSlide() {
+                this.currentIndex = (this.currentIndex + 1) % this.adsCount;
+            },
+            prevSlide() {
+                this.currentIndex = (this.currentIndex - 1 + this.adsCount) % this.adsCount;
+            },
+            autoRotate() {
+                if (this.adsCount > 0) {
+                    setInterval(() => { this.nextSlide(); }, 5000);
+                }
+            },
+            init() {
+                this.autoRotate();
+            }
+        }));
+    });
+</script>

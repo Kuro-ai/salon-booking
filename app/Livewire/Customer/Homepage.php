@@ -40,48 +40,50 @@ class Homepage extends Component
     public function render()
     {
         $ads = Advertisement::all();
-    
+
+        $categories = Category::with(['products' => function ($query) {
+            $query->whereRaw('LOWER(name) LIKE ?', ['%' . strtolower($this->search) . '%'])
+                ->whereBetween('price', [$this->minPrice, $this->maxPrice]);
+
+            // Apply category filter if it's set
+            if ($this->categoryFilter) {
+                $query->where('category_id', $this->categoryFilter);
+            }
+        }])->get();
+
         return view('livewire.customer.homepage', [
-            'categories' => Category::all(),
-            'products' => Product::where('name', 'like', "%{$this->search}%")
-                ->when($this->categoryFilter, fn($query) => $query->where('category_id', $this->categoryFilter))
-                ->whereBetween('price', [$this->minPrice, $this->maxPrice])
-                ->paginate(8),
+            'categories' => $categories,
             'ads' => $ads,
         ]);
     }
     
     public function addToCart($productId)
-{
-    $product = Product::find($productId);
+    {
+        $product = Product::find($productId);
 
-    if (!$product) {
-        session()->flash('error', 'Product not found.');
-        return;
+        if (!$product) {
+            session()->flash('error', 'Product not found.');
+            return;
+        }
+
+        $cart = Session::get('cart', []);
+
+        if (isset($cart[$productId])) {
+            $cart[$productId]['quantity']++;
+        } else {
+            $cart[$productId] = [
+                'name' => $product->name,
+                'price' => $product->price,
+                'image' => $product->image,
+                'quantity' => 1,
+            ];
+        }
+
+        Session::put('cart', $cart);
+
+        // 🔄 Notify the Mini Cart component to update
+        $this->dispatch('cartUpdated');
+
+        session()->flash('success', "{$product->name} added to cart!");
     }
-
-    $cart = Session::get('cart', []);
-
-    if (isset($cart[$productId])) {
-        $cart[$productId]['quantity']++;
-    } else {
-        $cart[$productId] = [
-            'name' => $product->name,
-            'price' => $product->price,
-            'image' => $product->image,
-            'quantity' => 1,
-        ];
-    }
-
-    Session::put('cart', $cart);
-
-    // 🔄 Notify the Mini Cart component to update
-    $this->dispatch('cartUpdated');
-
-    session()->flash('success', "{$product->name} added to cart!");
-}
-
-
-
-
 }

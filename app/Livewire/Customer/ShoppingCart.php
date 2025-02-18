@@ -60,8 +60,12 @@ class ShoppingCart extends Component
     {
         unset($this->cart[$productId]);
         Session::put('cart', $this->cart);
-        $this->refreshDiscount(); 
+        $this->refreshDiscount();
+
+        // Emit event to refresh the component
+        $this->dispatch('cartUpdated');
     }
+
 
     public function refreshDiscount()
     {
@@ -79,6 +83,7 @@ class ShoppingCart extends Component
         Session::forget('cart');
         Session::forget('applied_coupon');
         $this->resetCoupon();
+        $this->dispatch('cartUpdated');
     }
 
     public function getTotalPrice()

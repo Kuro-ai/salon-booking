@@ -25,7 +25,8 @@ class WishlistPage extends Component
     public function removeFromWishlist($wishlistId)
     {
         Wishlist::find($wishlistId)?->delete();
-        $this->loadWishlist(); // Refresh wishlist
+        $this->loadWishlist();
+        $this->dispatch('cartUpdated');
     }
 
     public function moveToCart($wishlistId)
@@ -36,13 +37,12 @@ class WishlistPage extends Component
         $cart = Session::get('cart', []);
 
         $productId = $wishlistItem->product_id;
-        $product = $wishlistItem->product; // Load product details
+        $product = $wishlistItem->product; 
 
         if (!$product) {
             return;
         }
 
-        // Check if the product already exists in cart
         if (isset($cart[$productId])) {
             $cart[$productId]['quantity']++;
         } else {
@@ -50,18 +50,15 @@ class WishlistPage extends Component
                 'name' => $product->name,
                 'price' => $product->price,
                 'image' => $product->image,
-                'quantity' => 1, // Default quantity
+                'quantity' => 1, 
             ];
         }
-
-        // Update session cart
         Session::put('cart', $cart);
 
-        // Remove from wishlist
         $wishlistItem->delete();
 
-        // Refresh wishlist
         $this->loadWishlist();
+        $this->dispatch('cartUpdated');
     }
 }
 

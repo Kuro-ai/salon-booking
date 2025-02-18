@@ -41,10 +41,10 @@
                     <input type="text" wire:model="newProductDescription" placeholder="Description" class="border p-1 w-full">
                 </td>
                 <td class="p-2 border">
-                    <input type="number" wire:model="newProductPrice" placeholder="Price" class="border p-1 w-full">
+                    <input type="number" min=0 wire:model="newProductPrice" placeholder="Price" class="border p-1 w-full">
                 </td>
                 <td class="p-2 border">
-                    <input type="number" wire:model="newProductStock" placeholder="Stock" class="border p-1 w-full">
+                    <input type="number" min=0 wire:model="newProductStock" placeholder="Stock" class="border p-1 w-full">
                 </td>
                 <td class="p-2 border">
                     <select wire:model="newProductCategoryId" class="border p-1 w-full">

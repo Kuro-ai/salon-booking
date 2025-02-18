@@ -10,12 +10,36 @@ class ProductReviews extends Component
 {
     public $product;
     public $reviews;
+    public $rating;
+    public $comment;
     public $editingReviewId = null;
     public $editRating = [];
     public $editComment = [];
 
     public function mount()
     {
+        $this->reviews = $this->product->reviews()->latest()->get();
+    }
+
+    public function submitReview()
+    {
+        $this->validate([
+            'rating' => 'required|integer|min:1|max:5',
+            'comment' => 'nullable|string|max:500',
+        ]);
+
+        Review::create([
+            'product_id' => $this->product->id,
+            'user_id' => Auth::id(),
+            'rating' => $this->rating,
+            'comment' => $this->comment,
+        ]);
+
+        $this->rating = null;
+        $this->comment = null;
+
+        session()->flash('message', 'Review submitted successfully!');
+
         $this->reviews = $this->product->reviews()->latest()->get();
     }
 

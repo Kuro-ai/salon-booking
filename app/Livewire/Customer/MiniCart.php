@@ -18,7 +18,7 @@ class MiniCart extends Component
             Session::put('cart', $cart);
         }
 
-        $this->dispatch('cartUpdated'); // 🔄 Notify other components
+        return redirect()->route('cart');
     }
 
     public function render()
