@@ -32,7 +32,7 @@ class Checkout extends Component
 
     public function calculateFinalTotal()
     {
-        $this->finalTotal = max(0, $this->totalAmount - $this->discount);
+        return ($this->discount > 0) ? max(0, $this->totalAmount - $this->discount) : $this->totalAmount;
     }
 
     public function placeOrder()
@@ -43,6 +43,9 @@ class Checkout extends Component
             'address' => 'required',
             'payment_method' => 'required'
         ]);
+
+        $this->discount = Session::get('discount', 0);
+        $this->finalTotal = $this->calculateFinalTotal();
 
         $order = Order::create([
             'user_id' => Auth::id(),

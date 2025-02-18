@@ -14,26 +14,28 @@
         <thead>
             <tr class="bg-gray-200">
                 <th class="p-2 border">Order No.</th>
-                <th class="p-2 border">Customer</th>
-                <th class="p-2 border">Product & Quantity</th>
+                <th class="p-2 border">Customer Name</th>
+                <th class="p-2 border">Email</th>
+                <th class="p-2 border">Address</th>
+                <th class="p-2 border">Payment Method</th>
                 <th class="p-2 border">Total Price</th>
+                <th class="p-2 border">Discount</th>
+                <th class="p-2 border">Final Price</th>
                 <th class="p-2 border">Status</th>
                 <th class="p-2 border">Actions</th>
             </tr>
         </thead>
         <tbody>
             @foreach($orders as $order)
-            <tr class="hover:bg-gray-100 transition">
-                <td class="p-2 border">{{ $order->id }}</td> <!-- Order No. -->
-                <td class="p-2 border">{{ $order->user->name }}</td>
-                <td class="p-2 border">
-                    <ul>
-                        @foreach($order->orderItems as $item)
-                            <li>{{ $item->product->name }} (x{{ $item->quantity }})</li>
-                        @endforeach
-                    </ul>
-                </td>
+            <tr class="hover:bg-gray-100 transition text-center">
+                <td class="p-2 border">{{ $order->id }}</td> 
+                <td class="p-2 border">{{ $order->name }}</td> 
+                <td class="p-2 border">{{ $order->email }}</td>
+                <td class="p-2 border">{{ $order->address }}</td>
+                <td class="p-2 border">{{ ucfirst($order->payment_method) }}</td>
                 <td class="p-2 border">${{ number_format($order->total_price, 2) }}</td>
+                <td class="p-2 border">${{ number_format($order->discount, 2) }}</td> 
+                <td class="p-2 border">${{ number_format($order->final_price, 2) }}</td> 
                 <td class="p-2 border">
                     @if ($editingId === $order->id)
                         <select wire:model="editStatus" class="border p-1 w-full">
