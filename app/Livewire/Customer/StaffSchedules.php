@@ -24,6 +24,13 @@ class StaffSchedules extends Component
         if ($this->selectedStaff) {
             $this->schedules = StaffSchedule::where('staff_id', $this->selectedStaff)
                 ->where('is_booked', false)
+                ->where(function ($query) {
+                    $query->where('date', '>', now()->toDateString())
+                        ->orWhere(function ($subQuery) {
+                            $subQuery->where('date', now()->toDateString())
+                                    ->where('start_time', '>', now()->format('H:i:s'));
+                        });
+                })
                 ->get()
                 ->toArray();
         } else {

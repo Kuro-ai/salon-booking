@@ -60,88 +60,75 @@
         </div>
     </div>
 
-    <!-- Include Swiper.js CSS & JS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.css" />
-    <script src="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.js"></script>
-
-    <!-- Product Carousel -->
-    <div class="container mx-auto p-6">
+    <div class="bg-white p-6 rounded shadow mt-6">
+        <h3 class="text-xl font-bold mb-4">Best-Selling Products</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            @foreach ($bestSellingProducts as $product)
+                <div class="bg-white p-4 rounded-lg shadow-md hover:shadow-xl transition-transform transform hover:-translate-y-1 border border-gray-200">
+                    <a href="{{ route('product.details', $product->id) }}" class="block">
+                        <div class="relative">
+                            <img src="{{ asset('storage/' . $product->image) }}" class="w-full h-48 object-cover rounded-lg">
+                        </div>
+                        <h3 class="font-semibold text-lg mt-3 text-gray-900">{{ $product->name }}</h3>
+                        <p class="text-blue-600 text-lg font-bold mt-2">${{ number_format($product->price, 2) }}</p>
+                    </a>
+    
+                    <div class="mt-4 flex items-center justify-between">
+                        <button wire:click="addToCart({{ $product->id }})"
+                            class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-all flex items-center justify-center w-full">
+                            🛒 Add to Cart
+                        </button>
+                    </div>
+    
+                    <div class="mt-2 text-center">
+                        <span class="text-gray-500 text-sm">{{ $product->total_sold }} Sold</span>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+    </div>
+    
+    
+    <!-- Product Grid -->
+    <div class="bg-white container mx-auto p-6">
+        <!-- Loop through each category -->
         @foreach($categories as $category)
             @if($category->products->count() > 0)
                 <div class="mt-8">
                     <h2 class="text-2xl font-bold text-gray-800">{{ $category->name }}</h2>
-                    
-                    <!-- Swiper Carousel -->
-                    <div class="swiper mySwiper mt-4">
-                        <div class="swiper-wrapper">
-                            @foreach($category->products as $product)
-                                @php
-                                    $isNew = $loop->index < 3 && now()->diffInDays($product->created_at) <= 7;
-                                @endphp
-
-                                <div class="swiper-slide bg-white p-4 rounded-lg shadow-md hover:shadow-xl transition-transform transform hover:-translate-y-1 border border-gray-200">
-                                    <a href="{{ route('product.details', $product->id) }}" class="block">
-                                        <div class="relative">
-                                            <img src="{{ asset('storage/' . $product->image) }}" class="w-full h-48 object-cover rounded-lg">
-                                            @if ($isNew)
-                                                <span class="absolute top-2 left-2 bg-blue-500 text-white text-xs font-semibold px-2 py-1 rounded">
-                                                    New
-                                                </span>
-                                            @endif
-                                        </div>
-                                        <h3 class="font-semibold text-lg mt-3 text-gray-900">{{ $product->name }}</h3>
-                                        <p class="text-blue-600 text-lg font-bold mt-2">${{ number_format($product->price, 2) }}</p>
-                                    </a>
-
-                                    <div class="mt-4 flex items-center justify-between">
-                                        <button wire:click="addToCart({{ $product->id }})"
-                                            class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-all flex items-center justify-center w-full">
-                                            🛒 Add to Cart
-                                        </button>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-4">
+                        @foreach($category->products as $product)
+                            @php
+                                $isNew = $loop->index < 3 && now()->diffInDays($product->created_at) <= 7;
+                            @endphp
+    
+                            <div class="bg-white p-4 rounded-lg shadow-md hover:shadow-xl transition-transform transform hover:-translate-y-1 border border-gray-200">
+                                <a href="{{ route('product.details', $product->id) }}" class="block">
+                                    <div class="relative">
+                                        <img src="{{ asset('storage/' . $product->image) }}" class="w-full h-48 object-cover rounded-lg">
+                                        @if ($isNew)
+                                            <span class="absolute top-2 left-2 bg-blue-500 text-white text-xs font-semibold px-2 py-1 rounded">
+                                                New
+                                            </span>
+                                        @endif
                                     </div>
-
-                                    <div class="mt-2 text-center">
-                                        <a href="{{ route('product.details', $product->id) }}" class="text-blue-500 hover:underline text-sm">
-                                            View Details →
-                                        </a>
-                                    </div>
+                                    <h3 class="font-semibold text-lg mt-3 text-gray-900">{{ $product->name }}</h3>
+                                    <p class="text-blue-600 text-lg font-bold mt-2">${{ number_format($product->price, 2) }}</p>
+                                </a>
+    
+                                <div class="mt-4 flex items-center justify-between">
+                                    <button wire:click="addToCart({{ $product->id }})"
+                                        class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-all flex items-center justify-center w-full">
+                                        🛒 Add to Cart
+                                    </button>
                                 </div>
-                            @endforeach
-                        </div>
-                        <!-- Pagination & Navigation -->
-                        <div class="swiper-pagination"></div>
-                        <div class="swiper-button-next"></div>
-                        <div class="swiper-button-prev"></div>
+                            </div>
+                        @endforeach
                     </div>
                 </div>
             @endif
         @endforeach
     </div>
-
-    <!-- Initialize Swiper -->
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            new Swiper(".mySwiper", {
-                slidesPerView: 1,
-                spaceBetween: 10,
-                loop: true,
-                navigation: {
-                    nextEl: ".swiper-button-next",
-                    prevEl: ".swiper-button-prev",
-                },
-                pagination: {
-                    el: ".swiper-pagination",
-                    clickable: true,
-                },
-                breakpoints: {
-                    640: { slidesPerView: 2 },
-                    768: { slidesPerView: 3 },
-                    1024: { slidesPerView: 4 },
-                },
-            });
-        });
-    </script>
-
 </div>
 
 <script>
