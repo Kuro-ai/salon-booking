@@ -7,7 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Staff extends Model
 {
-    protected $fillable = ['name', 'specialty'];
+    use HasFactory;
+
+    protected $fillable = ['name', 'specialty', 'email', 'phone_number', 'address'];
 
     public function schedules()
     {

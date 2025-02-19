@@ -6,14 +6,19 @@
             {{ session('message') }}
         </div>
     @endif
+
     <div class="mt-4 mb-4">
         <input type="text" wire:model.live="search" placeholder="Search staff by name..."
         class="border p-2 w-full mb-4 rounded">
     </div>
+
     <table class="w-full border border-gray-300">
         <thead>
             <tr class="bg-gray-200">
                 <th class="p-2 border">Name</th>
+                <th class="p-2 border">Email</th>
+                <th class="p-2 border">Phone Number</th>
+                <th class="p-2 border">Address</th>
                 <th class="p-2 border">Actions</th>
             </tr>
         </thead>
@@ -21,6 +26,9 @@
             <!-- New Staff Row -->
             <tr class="hover:bg-gray-100 transition">
                 <td class="p-2 border"><input type="text" wire:model="newName" placeholder="Staff Name" class="border p-1 w-full"></td>
+                <td class="p-2 border"><input type="email" wire:model="newEmail" placeholder="Email" class="border p-1 w-full"></td>
+                <td class="p-2 border"><input type="text" wire:model="newPhoneNumber" placeholder="Phone Number" class="border p-1 w-full"></td>
+                <td class="p-2 border"><input type="text" wire:model="newAddress" placeholder="Address" class="border p-1 w-full"></td>
                 <td class="p-2 border text-center">
                     <button wire:click="addStaff" class="bg-green-500 text-white px-2 py-1 rounded">Add</button>
                 </td>
@@ -38,9 +46,23 @@
                 </td>
                 <td class="p-2 border">
                     @if ($editingId === $member->id)
-                        <input type="text" wire:model="editSpecialty" class="border p-1 w-full">
+                        <input type="email" wire:model="editEmail" class="border p-1 w-full">
                     @else
-                        {{ $member->specialty }}
+                        {{ $member->email }}
+                    @endif
+                </td>
+                <td class="p-2 border">
+                    @if ($editingId === $member->id)
+                        <input type="text" wire:model="editPhoneNumber" class="border p-1 w-full">
+                    @else
+                        {{ $member->phone_number }}
+                    @endif
+                </td>
+                <td class="p-2 border">
+                    @if ($editingId === $member->id)
+                        <input type="text" wire:model="editAddress" class="border p-1 w-full">
+                    @else
+                        {{ $member->address }}
                     @endif
                 </td>
                 <td class="p-2 border text-center">
@@ -56,10 +78,6 @@
             @endforeach
         </tbody>
     </table>
-    <div class="mt-4">
-        {{ $staff->links() }}
-    </div>
-    <!-- Confirmation Modal -->
     @if($confirmingDelete)
     <div class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
         <div class="bg-white p-6 rounded shadow-md">
