@@ -1,4 +1,4 @@
-<div class="container mx-auto p-6">
+<div class="container mx-auto p-6 bg-[#f5b8f0]">
     <!-- Advertisement Carousel -->
     <div x-data="carousel({{ count($ads ?? []) }})" class="relative w-full overflow-hidden rounded-lg shadow-lg">
         <div class="flex transition-transform duration-500 ease-in-out" :style="'transform: translateX(-' + (currentIndex * 100) + '%)'" wire:ignore.self>
