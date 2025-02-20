@@ -10,7 +10,7 @@
     <!-- Search and Category Filter Inputs -->
     <div class="mb-4 flex gap-4">
         <input type="text" wire:model.live="search" placeholder="Search by name..." class="border p-2 rounded w-1/2">
-        <select wire:model="categoryFilter" class="border p-2 rounded w-1/2">
+        <select wire:model.live="categoryFilter" class="border p-2 rounded w-1/2">
             <option value="">Select Category</option>
             @foreach($categories as $category)
                 <option value="{{ $category->id }}">{{ $category->name }}</option>
