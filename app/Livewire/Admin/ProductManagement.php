@@ -30,7 +30,7 @@ class ProductManagement extends Component
         'newProductPrice' => 'required|numeric|min:0',
         'newProductStock' => 'required|integer|min:0',
         'newProductCategoryId' => 'required|exists:categories,id',
-        'newProductImage' => 'nullable|image|max:1024',
+        'newProductImage' => 'nullable|image',
     ];
 
     public function updatedSearch()
@@ -42,6 +42,32 @@ class ProductManagement extends Component
     {
         $this->resetPage(); // Reset pagination when category filter changes
     }
+
+    public function addProduct()
+    {
+        $this->validate();
+
+        $imagePath = $this->newProductImage ? $this->newProductImage->store('products', 'public') : null;
+
+        Product::create([
+            'name' => $this->newProductName,
+            'slug' => Str::slug($this->newProductName),
+            'description' => $this->newProductDescription,
+            'price' => $this->newProductPrice,
+            'stock' => $this->newProductStock,
+            'category_id' => $this->newProductCategoryId,
+            'image' => $imagePath,
+        ]);
+
+        session()->flash('message', 'Product added successfully!');
+
+        // Reset input fields
+        $this->reset([
+            'newProductName', 'newProductDescription', 'newProductPrice', 
+            'newProductStock', 'newProductCategoryId', 'newProductImage'
+        ]);
+    }
+
 
     public function editProduct($id)
     {
