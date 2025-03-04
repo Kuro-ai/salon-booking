@@ -26,13 +26,13 @@ class Checkout extends Component
         $this->calculateFinalTotal();
 
         if (empty($this->cart)) {
-            return redirect()->route('home')->with('error', 'Your cart is empty.');
+            return redirect()->route('livewire.customer.checkout')->with('error', 'Your cart is empty.');
         }
     }
 
     public function calculateFinalTotal()
     {
-        return ($this->discount > 0) ? max(0, $this->totalAmount - $this->discount) : $this->totalAmount;
+        $this->finalTotal = ($this->discount > 0) ? max(0, $this->totalAmount - $this->discount) : $this->totalAmount;
     }
 
     public function placeOrder()
@@ -45,7 +45,7 @@ class Checkout extends Component
         ]);
 
         $this->discount = Session::get('discount', 0);
-        $this->finalTotal = $this->calculateFinalTotal();
+        $this->calculateFinalTotal(); 
 
         $order = Order::create([
             'user_id' => Auth::id(),

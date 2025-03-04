@@ -101,7 +101,7 @@
     </div> --}}
 
     <!-- Customer Order Frequency -->
-    <div class="bg-white p-6 rounded shadow mt-6">
+    {{-- <div class="bg-white p-6 rounded shadow mt-6">
         <h3 class="text-xl font-bold mb-4">Top Customers (Order Frequency)</h3>
         <ul>
             @foreach ($customerOrderFrequency as $customer)
@@ -111,7 +111,7 @@
                 </li>
             @endforeach
         </ul>
-    </div>
+    </div> --}}
 
 </div>
 
