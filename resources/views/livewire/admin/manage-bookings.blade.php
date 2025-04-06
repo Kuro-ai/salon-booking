@@ -7,9 +7,15 @@
         </div>
     @endif
 
-    <div class="mb-4 flex space-x-2">
-        <input type="text" wire:model.live="searchName" class="border p-2 w-1/2 rounded" placeholder="Search by customer name...">
-        <input type="date" wire:model.live="searchDate" class="border p-2 w-1/2 rounded">
+    <div class="mb-4 flex space-x-3">
+        <input type="text" wire:model.live="searchName" class="border p-2 w-1/3 rounded" placeholder="Search by customer/staff name...">
+        <input type="date" wire:model.live="searchDate" class="border p-2 w-1/3 rounded">
+        <select wire:model.live="statusFilter" class="border p-2 w-1/3 rounded">
+            <option value="">All Statuses</option>
+            <option value="pending">Pending</option>
+            <option value="approved">Approved</option>
+            <option value="cancelled">Cancelled</option>
+        </select>
     </div>
 
     <table class="w-full border border-gray-300">
@@ -24,12 +30,79 @@
             </tr>
         </thead>
         <tbody>
+            <tr class="bg-blue-50">
+                <td class="p-2 border">
+                    <input type="text" wire:model="newCustomerName" class="border p-1 w-full rounded" placeholder="Customer Name">
+                </td>
+                <td class="p-2 border">
+                    <select wire:model="newServiceId" class="border p-1 w-full rounded">
+                        <option value="">Select Service</option>
+                        @foreach(\App\Models\Service::all() as $service)
+                            <option value="{{ $service->id }}">{{ $service->name }}</option>
+                        @endforeach
+                    </select>
+                </td>
+                <td class="p-2 border">
+                    <select wire:model="newStaffId" class="border p-1 w-full rounded">
+                        <option value="">Select Staff</option>
+                        @foreach(\App\Models\Staff::all() as $staff)
+                            <option value="{{ $staff->id }}">{{ $staff->name }}</option>
+                        @endforeach
+                    </select>
+                </td>
+                <td class="p-2 border">
+                    <select wire:model="newScheduleId" class="border p-1 w-full rounded">
+                        <option value="">Select Schedule</option>
+                        @foreach(\App\Models\StaffSchedule::where('is_booked', false)->get() as $schedule)
+                            <option value="{{ $schedule->id }}">{{ $schedule->date }} - {{ $schedule->start_time }}</option>
+                        @endforeach
+                    </select>
+                </td>
+                <td class="p-2 border">
+                    <select wire:model="newStatus" class="border p-1 w-full rounded">
+                        <option value="pending">Pending</option>
+                        <option value="approved">Approved</option>
+                        <option value="cancelled">Cancelled</option>
+                    </select>
+                </td>
+                <td class="p-2 border">
+                    <button wire:click="addBooking" class="bg-green-500 text-white px-2 py-1 rounded">Add Booking</button>
+                </td>
+            </tr>
+            
+            
             @foreach($bookings as $booking)
                 <tr class="hover:bg-gray-100 transition">
-                    <td class="p-2 border text-center">{{ $booking->user->name }}</td>
-                    <td class="p-2 border text-center">{{ $booking->service->name }}</td>
-                    <td class="p-2 border text-center">{{ $booking->staff->name }}</td>
-                    <td class="p-2 border text-center">{{ $booking->schedule->date }} - {{ $booking->schedule->start_time }}</td>
+                    <td class="p-2 border text-center">
+                        @if ($editingId === $booking->id)
+                            <input type="text" wire:model.defer="editCustomerName" class="border p-1 w-full rounded" />
+                        @else
+                            {{ $booking->user->name }}
+                        @endif
+                    </td>
+                    <td class="p-2 border text-center">
+                        @if ($editingId === $booking->id)
+                            <select wire:model.defer="editServiceId" class="border p-1 w-full rounded">
+                                @foreach(\App\Models\Service::all() as $service)
+                                    <option value="{{ $service->id }}">{{ $service->name }}</option>
+                                @endforeach
+                            </select>
+                        @else
+                            {{ $booking->service->name }}
+                        @endif
+                    </td>
+                    <td class="p-2 border text-center">
+                        @if ($editingId === $booking->id)
+                            <select wire:model.defer="editStaffId" class="border p-1 w-full rounded">
+                                @foreach(\App\Models\Staff::all() as $staff)
+                                    <option value="{{ $staff->id }}">{{ $staff->name }}</option>
+                                @endforeach
+                            </select>
+                        @else
+                            {{ $booking->staff->name }}
+                        @endif
+                    </td>
+                    <td class="p-2 border text-center">{{ $booking->schedule->date }} @ {{ $booking->schedule->start_time }} - {{ $booking->schedule->end_time }}</td>
                     <td class="p-2 border text-center">
                         @if ($editingId === $booking->id)
                             <select wire:model="editStatus" class="border p-1 w-full">

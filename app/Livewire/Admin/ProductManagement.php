@@ -35,12 +35,12 @@ class ProductManagement extends Component
 
     public function updatedSearch()
     {
-        $this->resetPage(); // Reset pagination when search query changes
+        $this->resetPage(); 
     }
 
     public function updatedCategoryFilter()
     {
-        $this->resetPage(); // Reset pagination when category filter changes
+        $this->resetPage(); 
     }
 
     public function addProduct()
@@ -123,6 +123,11 @@ class ProductManagement extends Component
     public function confirmDelete($id)
     {
         $this->confirmingDelete = $id;
+    }
+
+    public function cancelDelete()
+    {
+        $this->confirmingDelete = null;
     }
 
     public function deleteProduct($id)

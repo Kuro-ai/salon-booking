@@ -78,41 +78,6 @@
         </ul>
     </div>
     
-    <div class="bg-white p-6 rounded shadow">
-        <h3 class="text-xl font-bold mb-4">Filter Reports by Date</h3>
-        <div class="flex space-x-4">
-            <input type="date" wire:model="startDate" class="border p-2 rounded">
-            <input type="date" wire:model="endDate" class="border p-2 rounded">
-            <button wire:click="updateDashboard" class="bg-blue-500 text-white px-4 py-2 rounded">Apply</button>
-        </div>
-    </div>
-
-    <!-- Daily Revenue -->
-    {{-- <div class="bg-white p-6 rounded shadow mt-6">
-        <h3 class="text-xl font-bold mb-4">Daily Revenue (Last 7 Days)</h3>
-        <ul>
-            @foreach ($dailyRevenue as $day)
-                <li class="flex justify-between border-b py-2">
-                    <span>{{ \Carbon\Carbon::parse($day->date)->format('M d, Y') }}</span>
-                    <span class="font-bold">${{ number_format($day->total_revenue, 2) }}</span>
-                </li>
-            @endforeach
-        </ul>
-    </div> --}}
-
-    <!-- Customer Order Frequency -->
-    {{-- <div class="bg-white p-6 rounded shadow mt-6">
-        <h3 class="text-xl font-bold mb-4">Top Customers (Order Frequency)</h3>
-        <ul>
-            @foreach ($customerOrderFrequency as $customer)
-                <li class="flex justify-between border-b py-2">
-                    <span>{{ $customer->name }}</span>
-                    <span class="font-bold">{{ $customer->total_orders }} orders</span>
-                </li>
-            @endforeach
-        </ul>
-    </div> --}}
-
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
