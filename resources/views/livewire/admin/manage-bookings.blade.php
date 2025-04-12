@@ -62,6 +62,7 @@
                     <select wire:model="newStatus" class="border p-1 w-full rounded">
                         <option value="pending">Pending</option>
                         <option value="approved">Approved</option>
+                        <option value="completed">Completed</option>
                         <option value="cancelled">Cancelled</option>
                     </select>
                 </td>
@@ -108,10 +109,11 @@
                             <select wire:model="editStatus" class="border p-1 w-full">
                                 <option value="pending">Pending</option>
                                 <option value="approved">Approved</option>
+                                <option value="completed">Completed</option>
                                 <option value="cancelled">Cancelled</option>
                             </select>
                         @else
-                            <span class="px-2 py-1 rounded {{ $booking->status === 'approved' ? 'bg-green-200 text-green-700' : ($booking->status === 'cancelled' ? 'bg-red-200 text-red-700' : 'bg-yellow-200 text-yellow-700') }}">
+                            <span class="px-2 py-1 rounded {{ $booking->status === 'pending' ? 'bg-yellow-200 text-yellow-700' : ($booking->status === 'cancelled' ? 'bg-red-200 text-red-700' : 'bg-green-200 text-green-700') }}">
                                 {{ ucfirst($booking->status) }}
                             </span>
                         @endif
