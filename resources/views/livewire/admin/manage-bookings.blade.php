@@ -104,7 +104,7 @@
                             {{ $booking->staff->name }}
                         @endif
                     </td>
-                    <td class="p-2 border text-center">{{ $booking->schedule->date }} @ {{ $booking->schedule->start_time }} - {{ $booking->schedule->end_time }}</td>
+                    <td class="p-2 border text-center">{{ $booking->schedule->date }}  {{ $booking->schedule->start_time }} - {{ $booking->schedule->end_time }}</td>
                     <td class="p-2 border text-center">
                         @if ($editingId === $booking->id)
                             <select wire:model="editStatus" class="border p-1 w-full">

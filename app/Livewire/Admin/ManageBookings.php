@@ -160,6 +160,11 @@ class ManageBookings extends Component
     {
         $booking = ServiceBooking::find($id);
         if ($booking) {
+
+            if ($booking->schedule) {
+                $booking->schedule->update(['is_booked' => false]);
+            }
+
             $booking->delete();
             session()->flash('message', 'Booking deleted successfully.');
         }
