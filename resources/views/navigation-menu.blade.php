@@ -88,6 +88,10 @@
                             {{ __('Booking List') }}
                         </x-nav-link>
 
+                        <x-nav-link href="{{ route('customer.privacy') }}" :active="request()->routeIs('customer.privacy')">
+                            {{ __('Privacy Policy') }}
+                        </x-nav-link>
+                    
                         <div class="flex items-center space-x-4">
                             @livewire('customer.mini-cart')
                         </div>
@@ -285,6 +289,10 @@
                 <x-responsive-nav-link href="{{ route('bookings') }}" :active="request()->routeIs('bookings')">
                     {{ __('Booking List') }}
                 </x-responsive-nav-link>
+
+                <x-responsive-nav-link href="{{ route('customer.privacy') }}" :active="request()->routeIs('customer.privacy')">
+                    {{ __('Privacy Policy') }}
+                </x-responsive-nav-link>                
 
                 <div class="flex items-center space-x-4">
                     @livewire('customer.mini-cart')

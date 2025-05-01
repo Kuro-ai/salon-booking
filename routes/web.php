@@ -41,6 +41,9 @@ Route::middleware(['auth', 'customer'])->group(function () {
     Route::get('/service/{serviceId}/book', \App\Livewire\Customer\StaffSchedules::class)
     ->name('service.book');
     Route::get('/bookings', \App\Livewire\Customer\CustomerBookings::class)->name('bookings');
+    Route::get('/privacy', function () {
+        return view('customer.privacy');
+    })->name('customer.privacy');
 });
 
 Route::middleware([
