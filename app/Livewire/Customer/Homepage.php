@@ -14,8 +14,8 @@ class Homepage extends Component
     use WithPagination;
 
     public $search = '';
-    public $minPrice = 0;
-    public $maxPrice = 10000;
+    public $minPrice = 1;
+    public $maxPrice = 100;
     public $categoryFilter = null;
 
     public function updatingSearch()
@@ -43,8 +43,14 @@ class Homepage extends Component
         $ads = Advertisement::all();
 
         $categories = Category::with(['products' => function ($query) {
-            $query->whereRaw('LOWER(name) LIKE ?', ['%' . strtolower($this->search) . '%'])
-                ->whereBetween('price', [$this->minPrice, $this->maxPrice]);
+            $query->whereRaw('LOWER(name) LIKE ?', ['%' . strtolower($this->search) . '%']);
+
+            if (
+                is_numeric($this->minPrice) && is_numeric($this->maxPrice) &&
+                $this->minPrice !== '' && $this->maxPrice !== ''
+            ) {
+                $query->whereBetween('price', [$this->minPrice, $this->maxPrice]);
+            }
 
             if ($this->categoryFilter) {
                 $query->where('category_id', $this->categoryFilter);

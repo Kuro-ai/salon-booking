@@ -55,8 +55,8 @@
                 @endforeach
             </select>
 
-            <input type="number" min=0 wire:model.live="minPrice" class="border p-3 w-1/6 rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="Min Price">
-            <input type="number" min=20 wire:model.live="maxPrice" class="border p-3 w-1/6 rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="Max Price">
+            <input type="number" min=1 max="999999" wire:model.live="minPrice" class="border p-3 w-1/6 rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="Min Price">
+            <input type="number" min=20 max="999999" wire:model.live="maxPrice" class="border p-3 w-1/6 rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="Max Price">
         </div>
     </div>
 
